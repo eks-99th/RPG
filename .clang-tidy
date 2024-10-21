@@ -1,0 +1,3 @@
+Checks: 'google-*,clang-analyzer-*,modernize-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*'

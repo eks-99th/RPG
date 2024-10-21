@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"C_Cpp.clang_format_fallbackStyle": "none", // Use the .clang-format file
+		"C_Cpp.clang_format_style": "file", // Instruct VS Code to look for a .clang-format file
+		"editor.formatOnSave": true // Auto-format on save
+	}
+}
