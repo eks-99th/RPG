@@ -1,3 +1,4 @@
+#pragma once
 #include "hitpointtypes.hpp"
 
 class hp {
@@ -6,20 +7,25 @@ class hp {
   hptype MaxHP;
 
  public:
-  bool setMaxHP(hptype new_max_hp);
-  hptype getMaxHp();
-  hptype getCurrentHP();
+  auto setMaxHP(hptype new_max_hp) -> bool;
+  auto getMaxHp() -> hptype;
+  auto getCurrentHP() -> hptype;
   void takeDamage(hptype damage);
   void heal(hptype amount);
-  hp(/* args */);
-  ~hp();
+  hp();
+  hp(hptype cHP, hptype mHP) {
+    CurrentHP = cHP;
+    MaxHP = mHP;
+    if (CurrentHP > MaxHP) CurrentHP = MaxHP;
+  }
 };
 
-hp::hp(/* args */) {}
+hp::hp() {
+  CurrentHP = 1;
+  MaxHP = 1;
+}
 
-hp::~hp() {}
-
-bool hp::setMaxHP(hptype new_max_hp) {
+auto hp::setMaxHP(hptype new_max_hp) -> bool {
   if (new_max_hp < 1) {
     return false;
   }
@@ -30,9 +36,9 @@ bool hp::setMaxHP(hptype new_max_hp) {
   return true;
 }
 
-hptype hp::getMaxHp() { return MaxHP; }
+auto hp::getMaxHp() -> hptype { return MaxHP; }
 
-hptype hp::getCurrentHP() { return CurrentHP; }
+auto hp::getCurrentHP() -> hptype { return CurrentHP; }
 
 void hp::takeDamage(hptype damage) {
   if (damage > CurrentHP) {

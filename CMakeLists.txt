@@ -5,8 +5,6 @@ project(CppCodeAlong)
 set(CMAKE_C_STANDARD 11)  # Use C11 standard
 set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-extra-arg=-I/usr/include/c++/11;-extra-arg=-I/usr/include/x86_64-linux-gnu/c++/11;-extra-arg=-I/usr/include;-extra-arg=-fdiagnostics-format=json")
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-extra-arg=-I/usr/include/c++/11;-extra-arg=-I/usr/include/x86_64-linux-gnu/c++/11;-extra-arg=-I/usr/include")
 # Add an executable
 add_executable(CppCodeAlong main.cpp)

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstdint>
 
-using hptype = std::uint16_t;
+using stattype = std::uint16_t;
