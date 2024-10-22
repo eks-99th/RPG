@@ -19,4 +19,10 @@ class statblock {
     Strength = 1;
     Inteligence = 1;
   }
+
+ protected:
+  void increaseStats(stattype s, stattype i) {
+    Strength += s;
+    Inteligence += i;
+  }
 };
