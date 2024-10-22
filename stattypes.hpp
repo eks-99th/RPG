@@ -1,4 +1,4 @@
 #pragma once
 #include <cstdint>
 
-using stattype = std::uint16_t;
+using stattype = std::uint8_t;
