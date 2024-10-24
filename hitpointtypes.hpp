@@ -2,4 +2,4 @@
 
 #include <cstdint>
 
-using hptype = std::uint16_t;
+using welltype = std::uint16_t;
