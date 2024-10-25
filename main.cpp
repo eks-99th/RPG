@@ -3,7 +3,7 @@
 #include "playercharacter.hpp"
 
 auto main() -> int {
-  auto c1 = new Wizzard();
+  auto c1 = new Rogue();
   PlayerCharacter p1(c1);
 
   for (int i = 0; i < 2; i++) {
@@ -12,7 +12,10 @@ auto main() -> int {
               << '\n'
               << "-HP: " << p1.getCurrentHP() << '/' << p1.getMaxHP() << '\n'
               << "-Stength: " << p1.getStrength() << '\n'
-              << "-Intellect: " << p1.getIntelligence() << '\n';
+              << "-Intellect: " << p1.getIntelligence() << '\n'
+              << "-Agility: " << p1.getAgility() << '\n'
+              << "-Armor: " << p1.getArmor() << '\n'
+              << "-Resistance: " << p1.getElementRes() << '\n';
     if (i < 1) p1.gainEXP(100u);
   }
 
