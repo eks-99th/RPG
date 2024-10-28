@@ -11,11 +11,15 @@ auto main() -> int {
               << "-EXP: " << p1.getCurrentEXP() << '/' << p1.getEXPToNextLevel()
               << '\n'
               << "-HP: " << p1.getCurrentHP() << '/' << p1.getMaxHP() << '\n'
+              << "-MP: " << p1.getCurrentMP() << '/' << p1.getMaxMP() << '\n'
               << "-Stength: " << p1.getStrength() << '\n'
               << "-Intellect: " << p1.getIntelligence() << '\n'
               << "-Agility: " << p1.getAgility() << '\n'
               << "-Armor: " << p1.getArmor() << '\n'
               << "-Resistance: " << p1.getElementRes() << '\n';
+    for (const auto& ability : p1.getAbilities()) {
+      std::cout << "  -" << ability.name << '\n';
+    }
     if (i < 1) p1.gainEXP(100u);
   }
 
