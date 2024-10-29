@@ -7,6 +7,7 @@
 #include "ability.hpp"
 #include "pointwell.hpp"
 #include "statblock.hpp"
+#include "types.hpp"
 
 using exptype = std::uint64_t;
 using leveltype = std::uint16_t;
@@ -26,6 +27,22 @@ class PlayerCharacterDelegate : public statblock {
       // Do nothing
     };
   }
+
+  void applyBuff(buff b) {
+    for (auto& buff : Buffs) {
+      if (buff.name == b.name) {
+        buff.duration = b.duration;
+        return;
+      }
+    }
+    AddNewBuff(b);
+    // Strength += b.Strength;
+    // Inteligence += b.Inteligence;
+    // Agility += b.Agility;
+    // Armor += b.Armor;
+    // ElementRes += b.ElementRes;
+  }
+
   virtual void LevelUp() = 0;
   virtual auto getClassName() -> std::string = 0;
 
@@ -88,22 +105,44 @@ class PlayerCharacter {
     return static_cast<uint16_t>(pcclass->MP->getMax());
   }
 
-  auto getStrength() const -> uint16_t {
-    return static_cast<uint16_t>(pcclass->getStrength());
-  }
-  auto getIntelligence() const -> uint16_t {
-    return static_cast<uint16_t>(pcclass->getInteligence());
-  }
-  auto getAgility() const -> uint16_t {
-    return static_cast<uint16_t>(pcclass->getAgility());
+  auto getBaseStrength() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getBaseStrength());
   }
 
-  auto getArmor() const -> uint16_t {
-    return static_cast<uint16_t>(pcclass->getArmor());
+  auto getTotalStrength() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getTotalStrength());
   }
 
-  auto getElementRes() const -> uint16_t {
-    return static_cast<uint16_t>(pcclass->getElementRes());
+  auto getBaseIntelligence() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getBaseInteligence());
+  }
+
+  auto getTotalIntelligence() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getTotalInteligence());
+  }
+
+  auto getBaseAgility() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getBaseAgility());
+  }
+
+  auto getTotalAgility() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getTotalAgility());
+  }
+
+  auto getBaseArmor() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getBaseArmor());
+  }
+
+  auto getTotalArmor() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getTotalArmor());
+  }
+
+  auto getTotalElementRes() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getTotalElementRes());
+  }
+
+  auto getBaseElementRes() const -> uint16_t {
+    return static_cast<uint16_t>(pcclass->getBaseElementRes());
   }
 
   auto getAbilities() -> std::vector<Ability> { return pcclass->Abilities; }
@@ -115,6 +154,8 @@ class PlayerCharacter {
   auto healDamage(welltype amount) -> void {
     pcclass->HP->increaseCurrent(amount);
   }
+
+  auto applyBuff(buff buff) -> void { pcclass->applyBuff(buff); }
 };
 
 #define PCCONSTRUCT              \

@@ -12,15 +12,18 @@ auto main() -> int {
               << '\n'
               << "-HP: " << p1.getCurrentHP() << '/' << p1.getMaxHP() << '\n'
               << "-MP: " << p1.getCurrentMP() << '/' << p1.getMaxMP() << '\n'
-              << "-Stength: " << p1.getStrength() << '\n'
-              << "-Intellect: " << p1.getIntelligence() << '\n'
-              << "-Agility: " << p1.getAgility() << '\n'
-              << "-Armor: " << p1.getArmor() << '\n'
-              << "-Resistance: " << p1.getElementRes() << '\n';
+              << "-Stength: " << p1.getTotalStrength() << '\n'
+              << "-Intellect: " << p1.getTotalIntelligence() << '\n'
+              << "-Agility: " << p1.getTotalAgility() << '\n'
+              << "-Armor: " << p1.getTotalArmor() << '\n'
+              << "-Resistance: " << p1.getTotalElementRes() << '\n';
     for (const auto& ability : p1.getAbilities()) {
       std::cout << "  -" << ability.name << '\n';
     }
-    if (i < 1) p1.gainEXP(100u);
+    if (i < 1) {
+      p1.gainEXP(100u);
+      p1.applyBuff(buff("Strength Buff", false, 2u, 10, 0, 0, 0, 0));
+    }
   }
 
   return 0;

@@ -1,9 +1,7 @@
 #pragma once
 #include <cstdint>
 
-using exptype = std::uint64_t;
-using leveltype = std::uint16_t;
-
+#include "types.hpp"
 class LevelSystem {
  public:
   LevelSystem() {

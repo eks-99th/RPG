@@ -1,5 +1,5 @@
 #pragma once
-#include "hitpointtypes.hpp"
+#include "types.hpp"
 
 class PointWell {
  private:
