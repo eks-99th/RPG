@@ -36,11 +36,6 @@ class PlayerCharacterDelegate : public statblock {
       }
     }
     AddNewBuff(b);
-    // Strength += b.Strength;
-    // Inteligence += b.Inteligence;
-    // Agility += b.Agility;
-    // Armor += b.Armor;
-    // ElementRes += b.ElementRes;
   }
 
   virtual void LevelUp() = 0;

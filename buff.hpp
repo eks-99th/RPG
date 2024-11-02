@@ -2,24 +2,27 @@
 #include <cstdint>
 #include <string>
 
+#include "corestats.hpp"
 #include "types.hpp"
+
 struct buff {
-  buff(std::string name, bool isDebuff, std::uint16_t dur, stattype str,
-       stattype intel, stattype agi, stattype arm, stattype elres)
+  explicit buff(std::string name, bool isDebuff = false, std::uint16_t dur = 2u,
+                stattype str = 0, stattype intel = 0, stattype agi = 0,
+                stattype arm = 0, stattype elres = 0)
       : name(std::move(name)),
         isDebuff(isDebuff),
         duration(dur),
-        Strength(str),
-        Inteligence(intel),
-        Agility(agi),
-        Armor(arm),
-        ElementRes(elres) {}
+        buffedStats(CoreStats(str, intel, agi, arm, elres)) {}
+
+  explicit buff(std::string name, bool isDebuff = false, std::uint16_t dur = 2u,
+                CoreStats stats = CoreStats(0, 0, 0, 0, 0))
+      : name(std::move(name)),
+        isDebuff(isDebuff),
+        duration(dur),
+        buffedStats(stats) {}
+
   std::string name;
   bool isDebuff;
   std::uint16_t duration;
-  stattype Strength;
-  stattype Inteligence;
-  stattype Agility;
-  stattype Armor;
-  stattype ElementRes;
+  CoreStats buffedStats;
 };

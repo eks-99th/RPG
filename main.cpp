@@ -22,7 +22,7 @@ auto main() -> int {
     }
     if (i < 1) {
       p1.gainEXP(100u);
-      p1.applyBuff(buff("Strength Buff", false, 2u, 10, 0, 0, 0, 0));
+      p1.applyBuff(buff("Strength Buff", true, 2u, 50, 0, 0, 0, 0));
     }
   }
 

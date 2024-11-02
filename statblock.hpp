@@ -1,57 +1,50 @@
 #pragma once
+#include <limits>
 #include <vector>
 
 #include "buff.hpp"
-#include "types.hpp"
+#include "corestats.hpp"
 
 class statblock {
  private:
-  stattype baseStrength;
-  stattype baseInteligence;
-  stattype baseAgility;
-  stattype baseArmor;
-  stattype baseElementRes;
-
-  stattype totalStrengthFromBuffs = 0;
-  stattype totalInteligenceFromBuffs = 0;
-  stattype totalAgilityFromBuffs = 0;
-  stattype totalArmorFromBuffs = 0;
-  stattype totalElementResFromBuffs = 0;
+  CoreStats base;
+  CoreStats fromBuffs;
 
  public:
   explicit statblock(stattype s, stattype i, stattype a,
                      stattype armor = static_cast<stattype>(0u),
-                     stattype elres = static_cast<stattype>(0u))
-      : baseStrength(s),
-        baseInteligence(i),
-        baseAgility(a),
-        baseArmor(armor),
-        baseElementRes(elres) {}
+                     stattype elres = static_cast<stattype>(0u)) {
+    base.Strength = s;
+    base.Inteligence = i;
+    base.Agility = a;
+    base.Armor = armor;
+    base.ElementRes = elres;
+  }
 
-  auto getBaseStrength() const -> stattype { return baseStrength; }
-  auto getBaseInteligence() const -> stattype { return baseInteligence; }
-  auto getBaseAgility() const -> stattype { return baseAgility; }
-  auto getBaseArmor() const -> stattype { return baseArmor; }
-  auto getBaseElementRes() const -> stattype { return baseElementRes; }
+  auto getBaseStrength() const -> stattype { return base.Strength; }
+  auto getBaseInteligence() const -> stattype { return base.Inteligence; }
+  auto getBaseAgility() const -> stattype { return base.Agility; }
+  auto getBaseArmor() const -> stattype { return base.Armor; }
+  auto getBaseElementRes() const -> stattype { return base.ElementRes; }
 
   auto getTotalStrength() const -> stattype {
-    return baseStrength + totalStrengthFromBuffs;
+    return base.Strength + fromBuffs.Strength;
   }
   auto getTotalInteligence() const -> stattype {
-    return baseInteligence + totalInteligenceFromBuffs;
+    return base.Inteligence + fromBuffs.Inteligence;
   }
   auto getTotalAgility() const -> stattype {
-    return baseAgility + totalAgilityFromBuffs;
+    return base.Agility + fromBuffs.Agility;
   }
   auto getTotalArmor() const -> stattype {
-    return baseArmor + totalArmorFromBuffs;
+    return base.Armor + fromBuffs.Armor;
   }
   auto getTotalElementRes() const -> stattype {
-    return baseElementRes + totalElementResFromBuffs;
+    return base.ElementRes + fromBuffs.ElementRes;
   }
 
   statblock() {
-    baseStrength = baseInteligence = baseAgility = static_cast<stattype>(1u);
+    base.Strength = base.Inteligence = base.Agility = static_cast<stattype>(1u);
   }
 
  protected:
@@ -68,42 +61,28 @@ class statblock {
     recalculate_buffs();
   };
 
-  void increaseStats(stattype s, stattype i, stattype a) {
-    baseStrength += s;
-    baseInteligence += i;
-    baseAgility += a;
+  void increaseStats(stattype s = 0, stattype i = 0, stattype a = 0,
+                     stattype arm = 0, stattype elres = 0) {
+    base.Strength += s;
+    base.Inteligence += i;
+    base.Agility += a;
+    base.Armor += arm;
+    base.ElementRes += elres;
   }
+
+  void increaseStats(CoreStats cs) { base += cs; }
 
  private:
   void recalculate_buffs() {
-    stattype _strengthfrombuffs = 0;
-    stattype _inteligencefrombuffs = 0;
-    stattype _agilityfrombuffs = 0;
-    stattype _armorfrombuffs = 0;
-    stattype _elementresfrombuffs = 0;
+    auto tempTotalStats = CoreStats(0, 0, 0, 0, 0);
+
     for (const auto& buff : Buffs) {
       if (buff.isDebuff) {
-        _strengthfrombuffs -= buff.Strength;
-        _inteligencefrombuffs -= buff.Inteligence;
-        _agilityfrombuffs -= buff.Agility;
-        _armorfrombuffs -= buff.Armor;
-        _elementresfrombuffs -= buff.ElementRes;
+        tempTotalStats -= buff.buffedStats;
       } else {
-        _strengthfrombuffs += buff.Strength;
-        _inteligencefrombuffs += buff.Inteligence;
-        _agilityfrombuffs += buff.Agility;
-        _armorfrombuffs += buff.Armor;
-        _elementresfrombuffs += buff.ElementRes;
+        tempTotalStats += buff.buffedStats;
       }
-      totalStrengthFromBuffs =
-          (totalStrengthFromBuffs < 0) ? 0 : _strengthfrombuffs;
-      totalInteligenceFromBuffs =
-          (totalInteligenceFromBuffs < 0) ? 0 : _inteligencefrombuffs;
-      totalAgilityFromBuffs =
-          (totalAgilityFromBuffs < 0) ? 0 : _agilityfrombuffs;
-      totalArmorFromBuffs = (totalArmorFromBuffs < 0) ? 0 : _armorfrombuffs;
-      totalElementResFromBuffs =
-          (totalElementResFromBuffs < 0) ? 0 : _elementresfrombuffs;
+      fromBuffs = tempTotalStats;
     }
   };
 };
