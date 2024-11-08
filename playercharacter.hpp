@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "ability.hpp"
+#include "equipment.hpp"
 #include "pointwell.hpp"
 #include "statblock.hpp"
 #include "types.hpp"
@@ -70,10 +71,20 @@ class PlayerCharacterDelegate : public statblock {
 class PlayerCharacter {
  private:
   std::unique_ptr<PlayerCharacterDelegate> pcclass;
+  std::array<std::unique_ptr<equipment>,
+             static_cast<u_int16_t>(ARMORSLOTS::NUM_SLOTS)>
+      EquippedArmors;
+  std::array<std::unique_ptr<equipment>,
+             static_cast<u_int16_t>(WEAPONSLOT::NUM_SLOTS)>
+      EquippedWeapon;
 
  public:
   PlayerCharacter() = delete;
+  PlayerCharacter(const PlayerCharacter&) = delete;
+  PlayerCharacter(PlayerCharacter&&) = delete;
   explicit PlayerCharacter(PlayerCharacterDelegate* pc) : pcclass(pc) {}
+  ~PlayerCharacter() = default;
+
   auto getClassName() -> std::string { return pcclass->getClassName(); }
   auto getLevel() const -> uint16_t {
     return static_cast<uint16_t>(pcclass->getLevel());
@@ -129,7 +140,13 @@ class PlayerCharacter {
   }
 
   auto getTotalArmor() const -> uint16_t {
-    return static_cast<uint16_t>(pcclass->getTotalArmor());
+    stattype armorFromArmor = 0;
+    for (const auto& armor : EquippedArmors) {
+      if (armor) {
+        armorFromArmor += armor->stats.Armor;
+      }
+    }
+    return static_cast<uint16_t>(pcclass->getTotalArmor() + armorFromArmor);
   }
 
   auto getTotalElementRes() const -> uint16_t {
@@ -140,7 +157,17 @@ class PlayerCharacter {
     return static_cast<uint16_t>(pcclass->getBaseElementRes());
   }
 
-  auto getAbilities() -> std::vector<Ability> { return pcclass->Abilities; }
+  auto getAbilities() const -> std::vector<Ability> {
+    return pcclass->Abilities;
+  }
+
+  auto getArmors(ARMORSLOTS slot) const -> std::string {
+    if (const auto& armor = EquippedArmors[static_cast<u_int16_t>(slot)];
+        armor) {
+      return armor->name;
+    }
+    return "None";
+  }
 
   auto gainEXP(exptype exp) -> void { pcclass->gainExp(exp); }
   auto takeDamage(welltype damage) -> void {
@@ -151,6 +178,32 @@ class PlayerCharacter {
   }
 
   auto applyBuff(buff buff) -> void { pcclass->applyBuff(buff); }
+
+  auto equip(std::unique_ptr<equipment> e) -> bool {
+    if (auto armorPtr = dynamic_cast<armor*>(e.get()); armorPtr) {
+      if (auto slot_num = static_cast<u_int16_t>(armorPtr->slot);
+          EquippedArmors[slot_num]) {
+        EquippedArmors[slot_num].reset();  // move to inventory instead of
+                                           // delete
+        EquippedArmors[slot_num] = std::move(e);
+      } else {
+        EquippedArmors[slot_num] = std::move(e);
+      }
+      return true;
+    }
+    if (auto waeponPtr = dynamic_cast<weapon*>(e.get()); waeponPtr) {
+      if (auto slot_num = static_cast<u_int16_t>(waeponPtr->slot);
+          EquippedWeapon[slot_num]) {
+        EquippedWeapon[slot_num].reset();  // move to inventory instead of
+                                           // delete
+        EquippedWeapon[slot_num] = std::move(e);
+      } else {
+        EquippedWeapon[slot_num] = std::move(e);
+      }
+      return true;
+    }
+    return false;
+  }
 };
 
 #define PCCONSTRUCT              \
