@@ -3,17 +3,38 @@
 #include <typeinfo>
 
 #include "corestats.hpp"
-
-class equipment {
+#include "item_manager.hpp"
+class itemDelegate {
  public:
   std::string name;
-  CoreStats stats;
   virtual auto GetType() const -> const std::string = 0;
+  virtual ~itemDelegate() = default;
 
  protected:
-  equipment(std::string name, CoreStats stats)
-      : name(std::move(name)), stats(stats) {}
+  itemDelegate(std::string _name) : name(std::move(_name)){};
 };
+
+class item {
+ public:
+ private:
+  std::unique_ptr<itemDelegate> data;
+  item(std::unique_ptr<itemDelegate> delegate) : data(std::move(delegate)) {}
+  friend class ItemManager;
+  friend class PlayerCharacter;
+};
+
+class equipmentDelegate : public itemDelegate {
+ public:
+  CoreStats stats;
+  const std::uint32_t Unique_Id = Unique_Id_Counter++;
+
+ protected:
+  static std::uint32_t Unique_Id_Counter;
+  equipmentDelegate(std::string _name, CoreStats _stats)
+      : itemDelegate(std::move(_name)), stats(_stats){};
+};
+
+std::uint32_t equipmentDelegate::Unique_Id_Counter = 0;
 
 enum class ARMORSLOTS {
   HEAD,
@@ -27,23 +48,27 @@ enum class ARMORSLOTS {
   NUM_SLOTS
 };
 
-class armor final : public equipment {
+class armor final : public equipmentDelegate {
  public:
   ARMORSLOTS slot;
   armor() = delete;
   armor(const armor&) = delete;
   armor(armor&&) = delete;
+
+ protected:
   armor(const std::string& name, CoreStats stats, ARMORSLOTS slot)
-      : equipment(name, stats), slot(slot) {}
+      : equipmentDelegate(name, stats), slot(slot) {}
 
   auto GetType() const -> const std::string override {
     return typeid(*this).name();
   }
+
+  friend class ItemManager;
 };
 
 enum class WEAPONSLOT { MELEE1, RANGED, NUM_SLOTS };
 
-class weapon final : public equipment {
+class weapon final : public equipmentDelegate {
  public:
   WEAPONSLOT slot;
   damagetype MinDamage;
@@ -52,9 +77,11 @@ class weapon final : public equipment {
   weapon() = delete;
   weapon(const weapon&) = delete;
   weapon(weapon&&) = delete;
+
+ private:
   weapon(const std::string& name, CoreStats stats, WEAPONSLOT slot,
          damagetype _MinDamage, damagetype _MaxDamage, bool _twoHanded = false)
-      : equipment(name, stats),
+      : equipmentDelegate(name, stats),
         slot(slot),
         MinDamage(_MinDamage),
         MaxDamage(_MaxDamage),
@@ -63,4 +90,5 @@ class weapon final : public equipment {
   auto GetType() const -> const std::string override {
     return typeid(*this).name();
   }
+  friend class ItemManager;
 };

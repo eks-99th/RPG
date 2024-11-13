@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ability.hpp"
-#include "equipment.hpp"
+#include "item.hpp"
 #include "pointwell.hpp"
 #include "statblock.hpp"
 #include "types.hpp"
@@ -71,10 +71,10 @@ class PlayerCharacterDelegate : public statblock {
 class PlayerCharacter {
  private:
   std::unique_ptr<PlayerCharacterDelegate> pcclass;
-  std::array<std::unique_ptr<equipment>,
+  std::array<std::unique_ptr<equipmentDelegate>,
              static_cast<u_int16_t>(ARMORSLOTS::NUM_SLOTS)>
       EquippedArmors;
-  std::array<std::unique_ptr<equipment>,
+  std::array<std::unique_ptr<equipmentDelegate>,
              static_cast<u_int16_t>(WEAPONSLOT::NUM_SLOTS)>
       EquippedWeapon;
 
@@ -179,27 +179,32 @@ class PlayerCharacter {
 
   auto applyBuff(buff buff) -> void { pcclass->applyBuff(buff); }
 
-  auto equip(std::unique_ptr<equipment> e) -> bool {
-    if (auto armorPtr = dynamic_cast<armor*>(e.get()); armorPtr) {
-      if (auto slot_num = static_cast<u_int16_t>(armorPtr->slot);
-          EquippedArmors[slot_num]) {
-        EquippedArmors[slot_num].reset();  // move to inventory instead of
-                                           // delete
-        EquippedArmors[slot_num] = std::move(e);
-      } else {
-        EquippedArmors[slot_num] = std::move(e);
+  auto equip(std::unique_ptr<item> item_to_equip) -> bool {
+    if (!item_to_equip || !item_to_equip->data) return false;
+
+    if (auto armorPtr = dynamic_cast<armor*>(item_to_equip->data.get());
+        armorPtr) {
+      auto slot_num = static_cast<std::uint16_t>(armorPtr->slot);
+      if (EquippedArmors[slot_num]) {
+        // Remove the existing armor and replace it (or move to inventory, etc.)
+        EquippedArmors[slot_num].reset();
       }
+      // Equip the new armor in the designated slot
+      EquippedArmors[slot_num] = std::unique_ptr<equipmentDelegate>(
+          dynamic_cast<equipmentDelegate*>(item_to_equip->data.release()));
       return true;
     }
-    if (auto waeponPtr = dynamic_cast<weapon*>(e.get()); waeponPtr) {
-      if (auto slot_num = static_cast<u_int16_t>(waeponPtr->slot);
-          EquippedWeapon[slot_num]) {
-        EquippedWeapon[slot_num].reset();  // move to inventory instead of
-                                           // delete
-        EquippedWeapon[slot_num] = std::move(e);
-      } else {
-        EquippedWeapon[slot_num] = std::move(e);
+    if (auto weaponPtr = dynamic_cast<weapon*>(item_to_equip->data.get());
+        weaponPtr) {
+      auto slot_num = static_cast<std::uint16_t>(weaponPtr->slot);
+      if (EquippedWeapon[slot_num]) {
+        // Remove the existing weapon and replace it (or move to inventory,
+        // etc.)
+        EquippedWeapon[slot_num].reset();
       }
+      // Equip the new weapon in the designated slot
+      EquippedWeapon[slot_num] = std::unique_ptr<equipmentDelegate>(
+          dynamic_cast<equipmentDelegate*>(item_to_equip->data.release()));
       return true;
     }
     return false;

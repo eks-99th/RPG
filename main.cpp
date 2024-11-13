@@ -1,25 +1,30 @@
 #include <iostream>
 
+#include "item_manager.hpp"
 #include "playercharacter.hpp"
 
 auto main() -> int {
-  auto c1 = new Rogue();
-  PlayerCharacter p1(c1);
+  PlayerCharacter p1(new Warrior());
   CoreStats leather_armor_stats(0, 0, 0, 5, 3);
-
-  if (auto chest_armor = std::make_unique<armor>(
-          "Leather Armor", leather_armor_stats, ARMORSLOTS::CHEST);
-      p1.equip(std::move(chest_armor))) {
-    std::cout << "Equipped\n";
+  auto chest_armor = ItemManager::CreateArmor(
+      "Leather Armor", leather_armor_stats, ARMORSLOTS::CHEST);
+  if (p1.equip(std::move(chest_armor))) {
+    std::cout << "Equipped Leather Armor\n";
   } else {
     std::cout << "Not Equipped\n";
   }
-
-  CoreStats leather_helm_stats(0, 0, 0, 1, 1);
-  if (auto LeatherHelm = std::make_unique<armor>(
-          "Plain Leather Helmet", leather_helm_stats, ARMORSLOTS::HEAD);
-      p1.equip(std::move(LeatherHelm))) {
-    std::cout << "Equipped\n";
+  auto leather_helm_stats = CoreStats(0, 0, 0, 1, 1);
+  auto LeatherHelm = ItemManager::CreateArmor(
+      "Plain Leather Helmet", leather_helm_stats, ARMORSLOTS::HEAD);
+  if (p1.equip(std::move(LeatherHelm))) {
+    std::cout << "Equipped Plain Leather Helmet\n";
+  } else {
+    std::cout << "Not Equipped\n";
+  }
+  auto LongSword = ItemManager::CreateWeapon(
+      "Long Sword", CoreStats(0, 0, 0, 0, 0), WEAPONSLOT::MELEE1, 5, 10);
+  if (p1.equip(std::move(LongSword))) {
+    std::cout << "Equipped Long Sword\n";
   } else {
     std::cout << "Not Equipped\n";
   }
