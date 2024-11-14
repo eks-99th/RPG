@@ -209,6 +209,32 @@ class PlayerCharacter {
     }
     return false;
   }
+
+  auto use_item(std::unique_ptr<item> item_to_use) -> bool {
+    if (!item_to_use || !item_to_use->data) return false;
+
+    if (auto potionPtr = dynamic_cast<Potion*>(item_to_use->data.get());
+        potionPtr) {
+      if (potionPtr->Quantity > 0) {
+        if (potionPtr->healamount > 0 && pcclass->HP->isFull() == false) {
+          pcclass->HP->increaseCurrent(potionPtr->healamount);
+          potionPtr->Quantity--;
+          item_to_use.reset();
+          return true;
+        }
+        if (potionPtr->pbuff) {
+          pcclass->applyBuff(*potionPtr->pbuff);
+          potionPtr->Quantity--;
+          item_to_use.reset();
+          return true;
+        }
+      } else {
+        return false;
+      }
+    }
+    // other usable items
+    return false;
+  }
 };
 
 #define PCCONSTRUCT              \

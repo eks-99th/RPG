@@ -28,6 +28,10 @@ auto main() -> int {
   } else {
     std::cout << "Not Equipped\n";
   }
+  auto MinorHealingPotionBuff =
+      std::make_unique<buff>("Minor Healing Potion", false, 0, 0, 0, 0, 0, 10);
+  auto MinorPotion = ItemManager::CreatePotion(
+      "Minor Healing Potion", std::move(MinorHealingPotionBuff), 10);
 
   for (int i = 0; i < 2; i++) {
     std::cout << p1.getClassName() << " Level " << p1.getLevel() << '\n'
@@ -53,6 +57,13 @@ auto main() -> int {
       p1.applyBuff(buff("Strength Buff", true, 2u, 50, 0, 0, 0, 0));
     }
   }
-
+  std::cout << "Player took 10 damage\n";
+  p1.takeDamage(10);
+  std::cout << "Player health is now " << p1.getCurrentHP() << "/"
+            << p1.getMaxHP() << '\n';
+  std::cout << "Player used a potion\n";
+  p1.use_item(std::move(MinorPotion));
+  std::cout << "Player health is now " << p1.getCurrentHP() << "/"
+            << p1.getMaxHP() << '\n';
   return 0;
 }

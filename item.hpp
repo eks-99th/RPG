@@ -4,6 +4,12 @@
 
 #include "corestats.hpp"
 #include "item_manager.hpp"
+
+#define GETTYPE                                      \
+  auto GetType() const->const std::string override { \
+    return typeid(*this).name();                     \
+  }
+
 class itemDelegate {
  public:
   std::string name;
@@ -59,10 +65,25 @@ class armor final : public equipmentDelegate {
   armor(const std::string& name, CoreStats stats, ARMORSLOTS slot)
       : equipmentDelegate(name, stats), slot(slot) {}
 
-  auto GetType() const -> const std::string override {
-    return typeid(*this).name();
-  }
+  GETTYPE
 
+  friend class ItemManager;
+};
+
+class Potion final : public itemDelegate {
+ public:
+  welltype healamount;
+  std::unique_ptr<buff> pbuff;
+  itemcount Quantity;
+  GETTYPE
+
+ private:
+  Potion(std::string _name, std::unique_ptr<buff> _buff, welltype _amount,
+         itemcount _count = 1)
+      : itemDelegate(_name),
+        healamount(_amount),
+        pbuff(std::move(_buff)),
+        Quantity(_count) {}
   friend class ItemManager;
 };
 
@@ -87,8 +108,6 @@ class weapon final : public equipmentDelegate {
         MaxDamage(_MaxDamage),
         twoHanded(_twoHanded) {}
 
-  auto GetType() const -> const std::string override {
-    return typeid(*this).name();
-  }
+  GETTYPE
   friend class ItemManager;
 };

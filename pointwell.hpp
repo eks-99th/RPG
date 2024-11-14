@@ -12,6 +12,7 @@ class PointWell {
   auto getCurrent() -> welltype;
   void reduceCurrent(welltype damage);
   void increaseCurrent(welltype amount);
+  bool isFull();
   PointWell();
   PointWell(welltype c, welltype m) {
     CurrentFullness = c;
@@ -39,6 +40,8 @@ auto PointWell::setMax(welltype new_max) -> bool {
 auto PointWell::getMax() -> welltype { return Max; }
 
 auto PointWell::getCurrent() -> welltype { return CurrentFullness; }
+
+bool PointWell::isFull() { return CurrentFullness == Max; }
 
 void PointWell::reduceCurrent(welltype damage) {
   if (damage > CurrentFullness) {
